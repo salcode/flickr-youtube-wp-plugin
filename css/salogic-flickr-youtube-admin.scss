@@ -1,0 +1,23 @@
+/*
+Plugin Name: SaLogic Flickr YouTube Integration
+Plugin URI: http://salogic.net/
+Description: Adds the ability to add YouTube Videos and Flickr sets to your posts in the admin area using checkboxes
+Author: Sal Ferrarello
+*/
+
+/* Preview Image on Hover (both flickr and YouTube admin boxes) */
+label.salogic-image-preview-label {
+    position:relative;
+}
+label.salogic-image-preview-label img {
+    display:none;
+    position:absolute;
+    top:-45px; left:120px;
+    z-index:999;
+    border:2px solid #000;
+}
+label.salogic-image-preview-label:hover img {
+    display:block;
+}
+
+
