@@ -118,7 +118,7 @@
                 // default args
                 'max-results': (typeof youTubeAdminSetsPerPage=='number' ? youTubeAdminSetsPerPage : 5)
                 , 'start-index': 1
-                , 'userId': 'salogic'
+                , 'userId':  (typeof youTubeUserName=='string' ? youTubeUserName : 'youtube')
             }, args)
 
             , ajaxObj = getAjaxObj({

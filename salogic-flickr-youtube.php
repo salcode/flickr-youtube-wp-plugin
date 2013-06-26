@@ -4,13 +4,13 @@ Plugin Name: SaLogic Flickr YouTube Integration
 Plugin URI: http://salogic.net/
 Description: Adds the ability to add YouTube Videos and Flickr sets to your posts in the admin area using checkboxes
 Author: Sal Ferrarello
-Version: 1.1
+Version: 1.2
 Author URI: http://salogic.net/
 */
 
 // debug.php file to add error_logging functionality
 // i.e. var_dump to log file
-//require_once("debug.php");
+require_once("debug.php");
 
 if (!class_exists ("SaLogicFlickrYouTube")) {
     class SaLogicFlickrYouTube {
@@ -21,14 +21,16 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
             , $youTubeUserName;
 
         public function __construct($args = array() ){
+            // default_args are stored as values
+            // args passed in as parameters will override these values
             $default_args = array(
-                'flickrApiKey'      => false
-                // flickrUserId is for sferrarello (aka 86049135@N00)
-                , 'flickrUserId'    => '86049135@N00'
-                , 'youTubeUserName' => 'salogic'
-                // TODO pass this value to JS and analogous youtube value
-                , 'flickrAdminSetsPerPage'  => 10
-                , 'youTubeAdminSetsPerPage'  => 10
+                'flickrApiKey'      => self::settingsGetValue('flickrApiKey') // no default value
+                // default flickrUserId is 86049135@N00 for sferrarello
+                // http://www.flickr.com/photos/86049135@N00/
+                , 'flickrUserId'    => self::settingsGetValue('flickrUserId', '86049135@N00') // default value
+                , 'youTubeUserName' => self::settingsGetValue('youTubeUserName')
+                , 'flickrAdminSetsPerPage'  => self::settingsGetValue('flickrAdminSetsPerPage', 5)
+                , 'youTubeAdminSetsPerPage'  => self::settingsGetValue('youTubeAdminSetsPerPage', 5)
             );
 
             $args = array_merge($default_args, $args);
@@ -45,12 +47,129 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
             add_action('admin_init', array($this, 'addMetaboxes') );
             add_action('save_post', array($this, 'save'), 10, 2 ); // pass 2 parameters (post_id, post)
             add_filter("the_content", array($this, 'content') );
+
+            add_action('admin_menu', array($this, 'addSettingsPage') );
+            add_action('admin_init', array($this, 'addSettings') );
         }
 
         public function addMetaboxes() {
             add_meta_box('salogic_youtube', 'YouTube', array($this, 'youTubeMetabox'), 'post', 'side', 'high');
             add_meta_box('salogic_flickr',  'flickr',  array($this, 'flickrMetabox'),  'post', 'side', 'high');
         }
+
+        public function addSettingsPage() {
+            // add_options_page( $page_title, $menu_title, $capability, $menu_slug, $function);
+            add_options_page( 'SaLogic flickr/YouTube', 'flickr/YouTube', 'manage_options', 'flickryoutube', array($this, 'settingsPage'));
+        }
+        public function addSettings() {
+
+            // register_setting( $option_group, $option_name, $sanitize_callback );
+            register_setting( 'flickrYouTubeOptions', 'flickrYouTubeOptions', array($this, 'settingsValidation') );
+
+            // SECTION flickr
+            // add_settings_section( $id, $title, $callback, $page );
+            add_settings_section('flickr_main', 'flickr', array($this, 'settingsSectionFlickrParagraph'), 'flickrYouTubeOptions');
+
+            add_settings_field(
+                'flickrApiKey',                     // $id
+                'flickr API Key',                   // $title
+                array($this, 'settingsTextField'),  // $callback (generic for text field based on $args['key']
+                'flickrYouTubeOptions',             // $page
+                'flickr_main',                      // $section
+                array( 'key'   =>  'flickrApiKey')  // $args['key'] for generic settingsTextField
+            );
+
+            add_settings_field(
+                'flickrUserId',                     // $id
+                'flickr User Id',                   // $title
+                array($this, 'settingsTextField'),  // $callback (generic for text field based on $args['key']
+                'flickrYouTubeOptions',             // $page
+                'flickr_main',                      // $section
+                array( 'key'   =>  'flickrUserId')  // $args['key'] for generic settingsTextField
+            );
+
+            add_settings_field(
+                'flickrAdminSetsPerPage',           // $id
+                'flickr Admin Screen Sets per Page',// $title
+                array($this, 'settingsTextField'),  // $callback (generic for text field based on $args['key']
+                'flickrYouTubeOptions',             // $page
+                'flickr_main',                      // $section
+                array( 'key'   =>  'flickrAdminSetsPerPage') // $args['key'] for generic settingsTextField
+            );
+
+            // SECTION YouTube
+            add_settings_section('youtube_main', 'YouTube', array($this, 'settingsSectionYouTubeParagraph'), 'flickrYouTubeOptions');
+
+            add_settings_field(
+                'youTubeUserName',                  // $id
+                'YouTube User Name',                // $title
+                array($this, 'settingsTextField'),  // $callback (generic for text field based on $args['key']
+                'flickrYouTubeOptions',             // $page
+                'youtube_main',                     // $section
+                array( 'key'   =>  'youTubeUserName') // $args['key'] for generic settingsTextField
+            );
+
+            add_settings_field(
+                'youTubeAdminSetsPerPage',          // $id
+                'flickr Admin Screen Sets per Page',// $title
+                array($this, 'settingsTextField'),  // $callback (generic for text field based on $args['key']
+                'flickrYouTubeOptions',             // $page
+                'youtube_main',                     // $section
+                array( 'key'   =>  'youTubeAdminSetsPerPage') // $args['key'] for generic settingsTextField
+            );
+        } // addSettings()
+
+        public function settingsValidation($settingsHash) {
+            if (!is_array($settingsHash)) {
+                return;
+            }
+            foreach($settingsHash as $key => $value) {
+                $settingsHash[$key] = sanitize_text_field($value);
+            }
+            return $settingsHash;
+        }
+        public function settingsSectionFlickrParagraph() {
+            echo "Please enter settings specific to your flickr account here.";
+        }
+        public function settingsSectionYouTubeParagraph() {
+            echo "Please enter settings specific to your YouTube account here.";
+        }
+        // generic call back function to generate a text field for the API Settings
+        // $args['key'] is defined for the $id of the field (and the index of the array where the value is stored)
+        public function settingsTextField($args) {
+            if ( !array_key_exists('key', $args) ) {
+                return false;
+            }
+            $key = $args['key'];
+            $value= self::settingsGetValue($key);
+            echo "<input id='{$key}' name='flickrYouTubeOptions[{$key}]' size='40' type='text' value='{$value}' />";
+        }
+        public static function settingsGetValue($key, $default='') {
+            $flickrYouTubeOptions = get_option('flickrYouTubeOptions');
+            if (
+                is_array($flickrYouTubeOptions)
+                && array_key_exists($key, $flickrYouTubeOptions)
+                && $flickrYouTubeOptions[$key]!==''
+            ) {
+                return $flickrYouTubeOptions[$key];
+            }
+            return $default;
+        }
+        public function settingsPage() {
+        ?>
+            <div class="wrap">
+                <div id="icon-options-general" class="icon32"><br></div><h2>SaLogic flickr / YouTube</h2>
+
+                <form method="post" action="options.php">
+                    <?php settings_fields('flickrYouTubeOptions'); ?>
+                    <?php do_settings_sections('flickrYouTubeOptions'); ?>
+                    <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes"></p></form>
+                </form>
+            </div><!-- #wrap -->
+            <?php
+        }
+
+
 
         public function save($post_id, $post) {
             // we have two sets of checkboxes to store, listed in $checkbox_meta_keys
@@ -157,7 +276,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
         public function loadJavaScriptGlobalVariables() {
             ?>
             <script>
-                var flickrAdminSetsPerPage = <?php echo $this->flickrAdminSetsPerPage; ?>
+                var youTubeUserName = '<?php echo $this->youTubeUserName; ?>'
+                    ,flickrAdminSetsPerPage = <?php echo $this->flickrAdminSetsPerPage; ?>
                     , youTubeAdminSetsPerPage = <?php echo $this->youTubeAdminSetsPerPage; ?>;
             </script>
             <?php
@@ -306,6 +426,6 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
     error_log('class SaLogicFlickrYouTube already loaded but attempted to load a second time');
 }
 
-new SaLogicFlickrYouTube(array('flickrApiKey' => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'));
+new SaLogicFlickrYouTube();
 
 ?>
