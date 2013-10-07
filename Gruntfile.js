@@ -22,18 +22,30 @@ module.exports = function(grunt) {
         watch: {
             // production
             sass: {
-                files: ['css/salogic-flickr-youtube-admin.scss'],
+                files: [
+                    'css/salogic-flickr-youtube-admin.scss',
+                    'css/salogic-flickr-youtube.scss'
+                ],
                 tasks: ['sass:default']
             },
             js: {
                 files: 'js/salogic-flickr-youtube-admin.js',
                 tasks: ['uglify:js']
+            },
+            fronendjs: {
+                files: 'js/salogic-flickr-youtube.js',
+                tasks: ['uglify:frontendjs']
             }
+
         }, // watch
         uglify: {
             js: {
                 src: 'js/salogic-flickr-youtube-admin.js',
                 dest: 'js/salogic-flickr-youtube-admin.min.js'
+            },
+            frontendjs: {
+                src: 'js/salogic-flickr-youtube.js',
+                dest: 'js/salogic-flickr-youtube.min.js'
             }
         }, // uglify
         sass: {
@@ -42,7 +54,8 @@ module.exports = function(grunt) {
                     style: 'compressed'
                 },
                 files: {
-                    'css/salogic-flickr-youtube-admin.css':'css/salogic-flickr-youtube-admin.scss'
+                    'css/salogic-flickr-youtube-admin.css':'css/salogic-flickr-youtube-admin.scss',
+                    'css/salogic-flickr-youtube.css':'css/salogic-flickr-youtube.scss'
                 }
             }
         } // sass

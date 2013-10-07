@@ -188,7 +188,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
             foreach ($checkbox_meta_keys as $key) {
                 $old[$key] = get_post_meta( $post_id, $key, true );
-                // only modify value stored 
+                // only modify value stored
                 // if the data for this metabox appears in the $_POST array
                 if ( array_key_exists($key, $_POST) ) {
                     $new[$key] = $_POST[$key];
@@ -267,6 +267,9 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
             // load global javascript variables
             add_action( 'admin_footer', array($this, 'loadJavaScriptGlobalVariables') );
+
+            // load front end resources
+            add_action( 'wp_enqueue_scripts', array($this, 'loadFrontEndAssets') );
         }
 
         public function loadJavaScript($hook) {
@@ -281,6 +284,10 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
                     , youTubeAdminSetsPerPage = <?php echo $this->youTubeAdminSetsPerPage; ?>;
             </script>
             <?php
+        }
+
+        public function loadFrontEndAssets() {
+            wp_enqueue_style('colorbox', plugin_dir_url( __FILE__ ).'css/salogic-flickr-youtube.css', false, '1.4.31');
         }
 
         public function loadCss($hook) {
@@ -305,7 +312,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
                     $photos = $f->photosets_getPhotos($photoset_id, "media");
                     if ($photos) {
                         foreach ($photos['photoset']['photo'] as $photo) {
-                            $flickr_gallery .= "<li>"; 
+                            $flickr_gallery .= "<li>";
                                 $flickr_gallery .= "<a href='";
                                 $flickr_gallery .= "http://farm".$photo['farm'].".static.flickr.com/".$photo['server']."/".$photo['id']."_".$photo['secret'].".jpg'";
                                 $flickr_gallery .= " title='".htmlentities($photo['title'], ENT_QUOTES)."'";  // replace html entities including " and '
@@ -379,7 +386,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
             // NOTE: flickr api 3.1 photosets_getList does NOT support $page and $perPage parameters on api call
             // therefore we load them all and restrict display via js
-            $result = $f->photosets_getList($this->flickrUserId);  # get photosets for sferrarello (aka 86049135@N00) 
+            $result = $f->photosets_getList($this->flickrUserId);  # get photosets for sferrarello (aka 86049135@N00)
             return $result['photoset'];
 
         } // getFlickrPhotosets()
