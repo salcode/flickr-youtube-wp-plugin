@@ -9,7 +9,7 @@ Front End CSS
 
 /* BEGIN tooltip */
 .tooltip {display:none; width:192px; color:#000; font-size:10px;}
-.tooltip h4 {font-size:16px; padding-bottom:4px;}
+.tooltip h4 {font-size:16px; padding-bottom:4px; margin:0;}
 .tooltip a {color:#000; text-decoration:underline;}
 #photosetlist .tooltip a {display:inline;}
 .tooltip a:hover {text-decoration:none;}
