@@ -287,7 +287,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
         }
 
         public function loadFrontEndAssets() {
-            wp_enqueue_style('colorbox', plugin_dir_url( __FILE__ ).'css/salogic-flickr-youtube.css', false, '1.4.31');
+            wp_enqueue_style('salogicFlickrYouTubeFrontEnd', plugin_dir_url( __FILE__ ).'css/salogic-flickr-youtube.css', false, '1.2');
+            wp_enqueue_script('salogicFlickrYouTubeFrontEnd', plugin_dir_url( __FILE__ ).'js/salogic-flickr-youtube.js', array('jquery'), '1.2', true);
         }
 
         public function loadCss($hook) {

@@ -1,232 +1,178 @@
-// BEGIN: flickr
-(function() {
-    var sets
-        , setPos
-        , setsLength
-        , i
-        , increment = typeof flickrAdminSetsPerPage === 'number' ? flickrAdminSetsPerPage : 5;
+// BEGIN Tooltip Plugin by Flowplayer
+/* tools.tooltip 1.0.2 - Tooltips done right.
+ * Copyright (c) 2009 Tero Piirainen
+ * http://flowplayer.org/tools/tooltip.html
+ * Dual licensed under MIT and GPL 2+ licenses http://www.opensource.org/licenses
+ * Launch  : November 2008 Date: 2009-06-12 11:02:45 +0000 (Fri, 12 Jun 2009) Revision: 1911
+ */
+(function(c){c.tools=c.tools||{version:{}};c.tools.version.tooltip="1.0.2";var b={toggle:[function(){this.getTip().show()},function(){this.getTip().hide()}],fade:[function(){this.getTip().fadeIn(this.getConf().fadeInSpeed)},function(){this.getTip().fadeOut(this.getConf().fadeOutSpeed)}]};c.tools.addTipEffect=function(d,f,e){b[d]=[f,e]};c.tools.addTipEffect("slideup",function(){var d=this.getConf();var e=d.slideOffset||10;this.getTip().css({opacity:0}).animate({top:"-="+e,opacity:d.opacity},d.slideInSpeed||200).show()},function(){var d=this.getConf();var e=d.slideOffset||10;this.getTip().animate({top:"-="+e,opacity:0},d.slideOutSpeed||200,function(){c(this).hide().animate({top:"+="+(e*2)},0)})});function a(f,e){var d=this;var h=f.next();if(e.tip){if(e.tip.indexOf("#")!=-1){h=c(e.tip)}else{h=f.nextAll(e.tip).eq(0);if(!h.length){h=f.parent().nextAll(e.tip).eq(0)}}}function j(k,l){c(d).bind(k,function(n,m){if(l&&l.call(this)===false&&m){m.proceed=false}});return d}c.each(e,function(k,l){if(c.isFunction(l)){j(k,l)}});var g=f.is("input, textarea");f.bind(g?"focus":"mouseover",function(k){k.target=this;d.show(k);h.hover(function(){d.show()},function(){d.hide()})});f.bind(g?"blur":"mouseout",function(){d.hide()});h.css("opacity",e.opacity);var i=0;c.extend(d,{show:function(q){if(q){f=c(q.target)}clearTimeout(i);if(h.is(":animated")||h.is(":visible")){return d}var o={proceed:true};c(d).trigger("onBeforeShow",o);if(!o.proceed){return d}var n=f.position().top-h.outerHeight();var k=h.outerHeight()+f.outerHeight();var r=e.position[0];if(r=="center"){n+=k/2}if(r=="bottom"){n+=k}var l=f.outerWidth()+h.outerWidth();var m=f.position().left+f.outerWidth();r=e.position[1];if(r=="center"){m-=l/2}if(r=="left"){m-=l}n+=e.offset[0];m+=e.offset[1];h.css({position:"absolute",top:n,left:m});b[e.effect][0].call(d);c(d).trigger("onShow");return d},hide:function(){clearTimeout(i);i=setTimeout(function(){if(!h.is(":visible")){return d}var k={proceed:true};c(d).trigger("onBeforeHide",k);if(!k.proceed){return d}b[e.effect][1].call(d);c(d).trigger("onHide")},e.delay||1);return d},isShown:function(){return h.is(":visible, :animated")},getConf:function(){return e},getTip:function(){return h},getTrigger:function(){return f},onBeforeShow:function(k){return j("onBeforeShow",k)},onShow:function(k){return j("onShow",k)},onBeforeHide:function(k){return j("onBeforeHide",k)},onHide:function(k){return j("onHide",k)}})}c.prototype.tooltip=function(d){var e=this.eq(typeof d=="number"?d:0).data("tooltip");if(e){return e}var f={tip:null,effect:"slideup",delay:30,opacity:1,position:["top","center"],offset:[0,0],api:false};if(c.isFunction(d)){d={onBeforeShow:d}}c.extend(f,d);this.each(function(){e=new a(c(this),f);c(this).data("tooltip",e)});return f.api?e:this}})(jQuery);
+// END Tooltip Plugin by Flowplayer
 
-    jQuery(document).ready(function($) {
-        $('#salogic-flickr-photosets-load-more').on('click', function(e) {
-            // currently, simply revealing hidden items
-            // due to flickr api 3.1 photosets_getList does NOT support $page and $perPage parameters on api call
-            // ultimatley, this will be an ajax call
-
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            if (
-                typeof sets           !== 'object'
-                || typeof setPos      !== 'number'
-                || typeof setsLength  !== 'number'
-            ) {
-                // first time called, initialize values
-
-                // load sets
-                sets = jQuery('#salogic-flickr-photosets').find('>li');
-                setsLength = sets.length;
-
-                setPos = 0;
-                while (
-                    // increment to the first NON-visible set
-                    !$(sets[setPos]).hasClass('hidden')
-                    // without going past the end of the list
-                    && setPos < setsLength
-                ) {
-                    setPos++;
-                }
-            } // if first time called
-
-            // make visible next increment number of sets
-            for (i=0; i<increment && (setPos+i<setsLength); i++) {
-                $(sets[setPos + i]).removeClass('hidden');
-            }
-
-            if (setPos+increment >= setsLength) {
-                // we are at the end of the sets,
-                // hide load more button (preventing this function from being called again)
-                $(this).hide();
-            }
-            setPos += increment;
-
-        }); // click #salogic-flickr-photosets-load-more
-    }); // document.ready
-} )();
-// END: flickr
-
-// BEGIN: youtube
-(function() {
-    var youTubeIds
-        , $videos
-        // youTubeApiIndex - starting index value (one-based index) 
-        // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#start-indexsp
-        , youTubeApiIndex = 1
-        , htmlRowsToAdd = '';
-
-
-    // getYouTubeIds that were loaded from WP and need to be replaced with titles/imgs
-    var getYouTubeIds = function($videos) {
-        var youTubeIds = []; // note: same variable name as "global" variable
-        $videos.find('>li').each( function() {
-            youTubeIds.push( jQuery(this).attr('data-youtube-id') );
-        });
-        return youTubeIds;
-    }; // getYouTubeIds()
-
-    var getVideoObjectFromEntry = function(entry) {
-        return {
-            'title': getYouTubeTitleFromEntry( entry )
-            , 'id': getYouTubeIdFromEntry( entry )
-        };
-    }; // getVideoObjectFromEntry()
-    var getYouTubeIdFromEntry       = function(entry) { return entry.media$group.yt$videoid.$t; };
-    var getYouTubeTitleFromEntry    = function(entry) { return entry.title.$t; };
-
-    var getAjaxObj = function(ajaxObj) {
-        // merge parater object with default object
-        return jQuery.extend(
-            true // deep (recursive) merge
-            // defaults
-            , {
-                type: 'POST'
-                , dataType: 'jsonp'
-                , data: {
-                    'alt': 'json'
-                    // version 2 of the api https://developers.google.com/youtube/2.0/developers_guide_protocol_video_feeds
-                    , 'v': 2
-                }
-            },
-            ajaxObj
-        );
-    }; // getDefaultAjaxObj()
-
-    var ajaxVideoLoadByYouTubeIds = function(args) {
-        if (!args.youTubeIds) {
-            return;
-        }
-        var ajaxObj = getAjaxObj({ success: ajaxVideoSingleLoadSuccess });
-
-        jQuery.each(args.youTubeIds, function(index, youTubeId) {
-            ajaxObj.url = 'https://gdata.youtube.com/feeds/api/videos/'+youTubeId;
-            jQuery.ajax( ajaxObj );
-        }); // each youTubeId
-
-    }; // ajaxVideoLoadByYouTubeIds()
-
-    var ajaxVideoBatchLoad = function(args) {
-        var args = jQuery.extend({
-                // default args
-                'max-results': (typeof youTubeAdminSetsPerPage=='number' ? youTubeAdminSetsPerPage : 5)
-                , 'start-index': 1
-                , 'userId':  (typeof youTubeUserName=='string' ? youTubeUserName : 'youtube')
-            }, args)
-
-            , ajaxObj = getAjaxObj({
-                url: 'http://gdata.youtube.com/feeds/api/users/'+args['userId']+'/uploads'
-                , data: {
-                    'max-results': args['max-results']
-                    , 'start-index': args['start-index']
-                }
-                , success: ajaxVideoBatchLoadSuccess
+// BEGIN on document ready
+jQuery(document).ready(function($){
+    // BEGIN: single photoset (php load), js enhancements (lightbox and tooltip)
+    $('.salogicphotoset').each(function() {
+        $(this)
+        .find('a.trigger')
+            .colorbox({
+                maxWidth: '100%',
+                maxHeight: '100%',
+                transition:'elastic'
+            }) // init lightbox (colorbox)
+            .tooltip({
+                offset: [-45, 0]
+            })
+        .end()
+        .find('a.youtubetrigger')
+            .each(function() {
+                // convert youtube url to embed url
+                var result_regex =  // find youtube id
+                    /watch\?v=([\d\w-]*)/i.exec(
+                        $(this).attr('href')
+                    );
+                if (result_regex.length > 1) { // verify youtube id was found
+                    // replace url
+                    $(this).attr(
+                        'href',
+                        "http://www.youtube.com/embed/"+result_regex[1] // new url
+                    );
+                } // if youtube id found
+            }) // each
+            .colorbox({
+                iframe:true,
+                innerWidth:425,
+                innerHeight:344
+            })
+            .tooltip({
+                offset: [-45, 0]
             });
+    }); // each salogicphotoset
 
-        // load videos from the designated user
-        jQuery.ajax( ajaxObj );
+    $('#singleslideshow').colorbox({
+            maxWidth: '100%',
+            maxHeight: '100%',
+            transition:'elastic'
+    }); // init lightbox (colorbox)
 
-        // increment youTubeApiIndex, in preparation for the user
-        // clicking to manually load more videos
-        youTubeApiIndex += args['start-index']+args['max-results']
+    // END: single photoset (php load), js enhancements (lightbox and tooltip)
 
-    }; // ajaxVideoBatchLoad()
+    // links with rel='external' open in new window
+    jQuery('a[rel*=external]').attr('target', '_blank');
 
-    // when data is loaded from database it ONLY has the YouTube ID
-    // we use that information as a placeholder, waiting for the actual data to be loaded
-    var replaceYouTubePlaceholder = function(video) {
-        $videos.find('>li[data-youtube-id='+video.id+']').find('.title').text( video.title );
-    }; // replaceYouTubePlaceholder()
+    // break us out of any containing iframes
+    if (top != self) { top.location.replace(self.location.href); }
 
-    var markupToAppendToYouTubeList = function(video) {
-        return '<li data-youtube-id="' + video.id + '">'
-            + '<label class="selectit salogic-image-preview-label">'
-            + '<input type="checkbox" value="' + video.id + '" name="salogic_youtube_list[]"> '
-            + '<span class="title">' + video.title + '</span>'
-            + '<img alt="' + video.id + '" src="http://img.youtube.com/vi/' + video.id + '/default.jpg">'
-            + '</label>'
-            + '</li>';
-    };
+    jQuery('html').removeClass('no-js');
 
-    var ajaxVideoSingleLoadSuccess = function(response, textStatus, XMLHttpRequest) {
-        var htmlToAppend = ''
-            , video = getVideoObjectFromEntry(response.entry)
-            , youTubeIdsIndex = jQuery.inArray(video.id, youTubeIds);
-        if ( youTubeIdsIndex !== -1 ) {
-            // this video is already listed
-            // (e.g. it appears in youTubeIds)
-            // replace placeholder for it
-            replaceYouTubePlaceholder(video);
-        } else {
-            // this video is NOT already listed
-            // append to list
-            htmlToAppend += markupToAppendToYouTubeList(video);
-        }
-        // append any new items we've calculated the javascript for
-        $videos.append(htmlToAppend);
-    }; // ajaxVideoSingleLoadSuccess()
+/*
+    // BEGIN: photoset list javascript ajax load (used on homepage and media page)
+    var photosetlist = function(target) {
+         $(target)
+            .delegate("a.arrow", "click", function() {
+                var arrow = this,
+                    photoset_id =  // find flickr id
+                        /[\d\w-]*$/i.exec(
+                        $(this).attr('href')
+                    )[0];
+                $(this).toggleClass('open');
+                container = $(this).parent().parent();
+                if($(this).hasClass('open')) {
+                    // open gallery
+                    if ($(this).hasClass('loaded')) {
+                        // gallery was previously loaded
+                        $(container).find('div.photoset').show();
+                    } else {
+                        // first time gallery is loaded
+                        $.ajax({
+                            url: 'photoset.php',
+                            data: "id="+photoset_id,
+                            datatype: 'html',
+                            context: '#photoset',
+                            beforeSend: function() {
+                                var photoset_slideshow;
 
-    var ajaxVideoBatchLoadSuccess = function(response, textStatus, XMLHttpRequest) {
-        var htmlToAppend = '';
+                                // display loading screen
+                                $(container).append("<div class='loadingmsg'>Loading...</div>");
 
-        jQuery.each(response.feed.entry, function(index, entry) {
-            // NOTE / TODO? : this code is very similar to ajaxVideoSingleLoadSuccess
-            // and should probably be combined
-            // currently kept separate so we can create all the of the new
-            // html as text and insert it into the DOM all at once
-            var video = getVideoObjectFromEntry(entry)
-                , youTubeIdsIndex = jQuery.inArray(video.id, youTubeIds);
 
-            if ( youTubeIdsIndex !== -1 ) {
-                // this video is already listed
-                // (e.g. it appears in youTubeIds)
-                // replace placeholder for it
-                replaceYouTubePlaceholder(video);
-            } else {
-                // this video is NOT already listed
-                // append to list
-                htmlToAppend += markupToAppendToYouTubeList(video);
-            }
-        }); // each entry
+                            },
+                            success: function(html) {
+                                // pull only photoset info, remove id, add classes
+                                var photoset = $(html).find('#photoset');
+                                $(photoset).attr('id', '').addClass('photoset jsme');
 
-        // append any new items for which we've calculated the html
-        $videos.append(htmlToAppend);
+                                // display slideshow link
+                                photoset_slideshow =
+                                    $("<a class='slideshow' href='slideshow_ajax.php?width=650&amp;height=490&amp;id="+ photoset_id + "'>Slideshow</a>")
+                                    .colorbox({
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                        transition: 'elastic'
+                                    });
+                                $(photoset).prepend(photoset_slideshow);
 
-        // load video details for any video not loaded as a recent video
-        // i.e. if we have any placeholders that have not been replaced,
-        // look them up and replace them
-        ajaxVideoLoadByYouTubeIds({'youTubeIds': youTubeIds});
+                                $(container)
+                                    .append(photoset)
+                                    .find('a.trigger')
+                                        .addClass('lbme')
+                                        .colorbox({
+                                           maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            transition:'elastic'
+                                        }) // init lightbox (colorbox)
+                                        .tooltip({
+                                            offset: [30, 0]
+                                        }).end()
+                                    .find('a.youtubetrigger')
+                                        .each(function() {
+                                            // convert youtube url to embed url
+                                            var result_regex =  // find youtube id
+                                                /watch\?v=([\d\w-]*)/i.exec(
+                                                    $(this).attr('href')
+                                                );
+                                            if (result_regex.length > 1) { // verify youtube id was found
+                                                // replace url
+                                                $(this).attr(
+                                                    'href',
+                                                    "http://www.youtube.com/embed/"+result_regex[1] // new url
+                                                );
+                                            } // if youtube id found
+                                        })
+                                        .colorbox({
+                                            iframe:true,
+                                            innerWidth:425,
+                                            innerHeight:344
+                                        })
+                                        .tooltip({
+                                            offset: [30, 0]
+                                        });
 
-    }; // ajaxVideoBatchLoadSuccess()
+                                // hide loading msg
+                                $(container).find('div.loadingmsg').hide();
 
-    jQuery(document).ready(function($) {
-        $videos = $('#salogic-youtube-videos');
+                                $(arrow).addClass('loaded');
+                            },
+                            error: function() {
+                                alert('an error occurred');
+                            }
 
-        $('#salogic-youtube-videos-load-more').on('click', function(e) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
+                        });
+                    } // if / else (prev loaded / virgin gallery)
 
-            ajaxVideoBatchLoad({
-                'start-index': youTubeApiIndex
+                } else {
+                    // close gallery
+                    $(container).find('div.photoset').hide();
+                }
+                return false;
             });
-        }); // on click load more youtube videos
+    }; // function photosetlist
+    var list_of_photosets = $('#photosetlist');
+    if (list_of_photosets.length) {
+        // #photosetlist exists
+        photosetlist(list_of_photosets);
+    } // if #photosetlist exists
+    // END: photoset list javascript ajax load
+    */
 
-
-        // getYouTubeIds
-        youTubeIds = getYouTubeIds( $videos );
-
-        // load n most recent videos
-        // (in the callback we load any videos that were loaded from WordPress but are still placeholders)
-        ajaxVideoBatchLoad();
-
-    }); // document.ready
-} )();
-// END: youtube
-
+});
+// END on document ready
