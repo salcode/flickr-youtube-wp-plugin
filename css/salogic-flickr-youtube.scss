@@ -6,6 +6,18 @@ Author: Sal Ferrarello
 
 Front End CSS
 */
+
+/* BEGIN tooltip */
+.tooltip {display:none; width:192px; color:#000; font-size:10px;}
+.tooltip h4 {font-size:16px; padding-bottom:4px;}
+.tooltip a {color:#000; text-decoration:underline;}
+#photosetlist .tooltip a {display:inline;}
+.tooltip a:hover {text-decoration:none;}
+.tooltip .top {display:block; height:11px; background:transparent url(images/tooltip/top.png) no-repeat scroll 0 0;}
+.tooltip .middle {padding:0 20px 5px; background:transparent url(images/tooltip/middle.gif) repeat-y scroll 0 0;}
+.tooltip .bottom {display:block; height:38px; background:transparent url(images/tooltip/bottom.png) no-repeat scroll 0 100%;}
+/* END tooltip */
+
 /*
     Colorbox Core Style:
     The following CSS is consistent between example themes and should not be altered.
@@ -22,7 +34,7 @@ Front End CSS
 .cboxIframe{width:100%; height:100%; display:block; border:0;}
 #colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box; -moz-box-sizing:content-box; -webkit-box-sizing:content-box;}
 
-/* 
+/*
     User Style:
     Change the following styles to modify the appearance of Colorbox.  They are
     ordered & tabbed in a way that represents the nesting of the generated HTML.
@@ -48,7 +60,7 @@ Front End CSS
 
         /* these elements are buttons, and may need to have additional styles reset to avoid unwanted base styles */
         #cboxPrevious, #cboxNext, #cboxSlideshow, #cboxClose {border:0; padding:0; margin:0; overflow:visible; width:auto; background:none; }
-        
+
         /* avoid outlines on :active (mouseclick), but preserve outlines on :focus (tabbed navigating) */
         #cboxPrevious:active, #cboxNext:active, #cboxSlideshow:active, #cboxClose:active {outline:0;}
 
@@ -77,3 +89,20 @@ Front End CSS
 }
 
 
+/* style image/video gallery */
+
+#content .thumbs {
+    margin-left:0;
+    list-style:none;
+    padding-left:0;
+}
+#content .thumbs li {float:left; height:125px; margin-right:10px;}
+
+#content .thumbs .youtubetrigger {
+    position:relative;
+}
+#content .thumbs .videoicon {
+    background:transparent url(images/gallery/playbutton24.png) no-repeat scroll 0 0;
+    display:block; width:16px; height:16px;
+    position:absolute; bottom:20px; right:21px;
+}
