@@ -4,8 +4,13 @@ Plugin Name: SaLogic Flickr YouTube Integration
 Plugin URI: http://salogic.net/
 Description: Adds the ability to add YouTube Videos and Flickr sets to your posts in the admin area using checkboxes
 Author: Sal Ferrarello
-Version: 1.3
+Version: 1.5
 Author URI: http://salogic.net/
+*/
+/*
+Changelog:
+20140628 - update phpFlickr library for SSL endpoints, version bump 1.5
+20140326 - adding transient caching when loading content for a post, version bump 1.4
 */
 
 // debug.php file to add error_logging functionality
@@ -258,7 +263,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
         public function loadAssets() {
             // php files
-            require_once("phpFlickr-3.1/phpFlickr.php");
+            require_once("phpFlickr-3.1.1/phpFlickr.php");
 
             // css
             add_action( 'admin_enqueue_scripts', array($this, 'loadCss'), 100 );
