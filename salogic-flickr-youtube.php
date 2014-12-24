@@ -47,6 +47,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
             add_action('admin_init', array($this, 'addMetaboxes') );
             add_action('save_post', array($this, 'save'), 10, 2 ); // pass 2 parameters (post_id, post)
             add_filter("the_content", array($this, 'content') );
+            add_action('post_updated', array( $this, 'deleteTransient' ) );
 
             add_action('admin_menu', array($this, 'addSettingsPage') );
             add_action('admin_init', array($this, 'addSettings') );
@@ -299,6 +300,32 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
         }
 
         public function content($content) {
+            global $post;
+
+            if ( !$post ) {
+                error_log('salogic-flickr-youtube plugin failed to retrieve post information for transient key generation');
+                return $content;
+            }
+            $transient_key  = 'salogic-flickr-youtube-plugin-conent-post-' . $post->ID;
+            if ( false === ( $plugin_content = get_transient( $transient_key ) ) ) {
+                //error_log( 'transient cache miss ' . $transient_key );
+                // It wasn't there, so regenerate the data and save the transient
+                $plugin_content = $this->rebuildPluginContent();
+                $expire_time = 30 * DAY_IN_SECONDS;
+                set_transient( $transient_key, $plugin_content, $expire_time );
+            } else {
+                //error_log( 'transient cache hit ' . $transient_key );
+            }
+            return $content . $plugin_content;
+        }
+
+        public function deleteTransient( $post_id ) {
+            $transient_key  = 'salogic-flickr-youtube-plugin-conent-post-' . $post_id;
+            //error_log( 'deleteTransient ' . $transient_key );
+            delete_transient( $transient_key );
+        }
+
+        public function rebuildPluginContent() {
             // TODO: improve the front-end
             //      - remove extraneous markup and use css3 for styling
             global $post;
@@ -379,8 +406,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
             } else {
                 $youtube_gallery = '';
             }
-            return $content . '<div class="salogicphotoset">'. $flickr_gallery . $youtube_gallery. '</div><!-- .salogicphotoset -->';
-        } // content()
+            return '<div class="salogicphotoset">'. $flickr_gallery . $youtube_gallery. '</div><!-- .salogicphotoset -->';
+        } // rebuildPluginContent()
 
 
         // Returns result of http://www.flickr.com/services/api/flickr.photosets.getList.html
