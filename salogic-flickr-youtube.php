@@ -13,10 +13,6 @@ Changelog:
 20140326 - adding transient caching when loading content for a post, version bump 1.4
 */
 
-// debug.php file to add error_logging functionality
-// i.e. var_dump to log file
-require_once("debug.php");
-
 if (!class_exists ("SaLogicFlickrYouTube")) {
     class SaLogicFlickrYouTube {
         var $flickrApiKey
