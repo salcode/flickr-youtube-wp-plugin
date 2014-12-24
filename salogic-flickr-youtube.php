@@ -344,30 +344,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
                     if ($photos) {
                         foreach ($photos['photoset']['photo'] as $photo) {
                             $flickr_gallery .= "<li>";
-                                $flickr_gallery .= "<a href='";
-                                $flickr_gallery .= "http://farm".$photo['farm'].".static.flickr.com/".$photo['server']."/".$photo['id']."_".$photo['secret'].".jpg'";
-                                $flickr_gallery .= " title='".htmlentities($photo['title'], ENT_QUOTES)."'";  // replace html entities including " and '
-                                $flickr_gallery .= " rel='group_".$post->ID."'";
-                                $flickr_gallery .= " class='trigger ccframe'>";
-                                  $flickr_gallery .= "<img src=";
-                                  $flickr_gallery .= "'http://farm".$photo['farm'].".static.flickr.com/".$photo['server']."/".$photo['id']."_".$photo['secret']."_t.jpg'";
-                                  $flickr_gallery .= " alt='".htmlentities($photo['title'], ENT_QUOTES)."' />";
-                                $flickr_gallery .= "</a><!-- .frame -->\n";
-                                $flickr_gallery .= "<div class='tooltip'>\n";
-                                $flickr_gallery .= "<span class='top'><!-- .top --></span>\n";
-                                $flickr_gallery .= "<div class='middle'>\n";
-                                $flickr_gallery .= "<h4>".htmlentities($photo['title'], ENT_QUOTES)."</h4>";
-                                $flickr_gallery .= "click the photo below to enlarge<br />";
-                                $flickr_gallery .= "or view the <a rel='external' href=";
-                                $flickr_gallery .= "'http://farm".$photo['farm'].".static.flickr.com/".$photo['server']."/".$photo['id']."_".$photo['secret']."_b.jpg'";
-                                $flickr_gallery .= ">";
-                                $flickr_gallery .= "printable version";
-                                $flickr_gallery .= "</a>";
-                                $flickr_gallery .= "</div><!-- .middle -->\n";
-                                $flickr_gallery .= "<span class='bottom'><!-- .bottom --></span>\n";
-                                $flickr_gallery .= "</div><!-- .tooltip -->";
-
-                            $flickr_gallery .= "</li>";
+                                $flickr_gallery .= self::display_item_to_string( $photo, 'flickr_photo' );
+                           $flickr_gallery .= "</li>";
                         } // foreach $photo
                     } // if $photos are defined
                 } // foreach photoset
@@ -384,23 +362,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
                 $youtube_gallery = "<ul class='clearfix photos thumbs'>";
                 foreach ($salogic_youtube_list as $video_id) {
                         $youtube_gallery .= "<li>";
-                            $youtube_gallery .= "<a href='";
-                            $youtube_gallery .= "http://www.youtube.com/watch?v=".$video_id."'";
-                            $youtube_gallery .= " rel='group_".$post->ID."'";
-                            $youtube_gallery .= " class='youtubetrigger ccframe'>";
-                              $youtube_gallery .= "<img src=";
-                              $youtube_gallery .= "'http://i3.ytimg.com/vi/".$video_id."/default.jpg'";
-                              $youtube_gallery .= " alt='"."alt text"."' />";
-                                $youtube_gallery .= "<span class='videoicon'><!-- .videoicon --></span>\n";
-                            $youtube_gallery .= "</a><!-- .frame -->\n";
-                            $youtube_gallery .= "<div class='tooltip'>\n";
-                            $youtube_gallery .= "<span class='top'><!-- .top --></span>\n";
-                            $youtube_gallery .= "<div class='middle'>\n";
-                            $youtube_gallery .= "<h4>"."Video"."</h4>";
-                            $youtube_gallery .= "click the photo below to view<br />the video";
-                            $youtube_gallery .= "</div><!-- .middle -->\n";
-                            $youtube_gallery .= "<span class='bottom'><!-- .bottom --></span>\n";
-                            $youtube_gallery .= "</div><!-- .tooltip -->";
+                            /* $youtube_gallery .= '<pre>' . print_r( $video_id, true ) . '</pre>'; */
+                            $youtube_gallery .= self::display_item_to_string( $video_id, 'youtube_video' );
                         $youtube_gallery .= "</li>";
                 } // foreach video
                 $youtube_gallery .= "</ul>";
@@ -409,6 +372,10 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
             }
             return '<div class="salogicphotoset">'. $flickr_gallery . $youtube_gallery. '</div><!-- .salogicphotoset -->';
         } // rebuildPluginContent()
+
+        private static function display_item_to_string( $item, $type ) {
+            return '<pre>' . print_r( $item, true ) . '</pre>';
+        }
 
 
         // Returns result of http://www.flickr.com/services/api/flickr.photosets.getList.html
