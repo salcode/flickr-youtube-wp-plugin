@@ -447,5 +447,6 @@ function salogic_fyd_youtube( $output, $item, $type ) {
     if ( 'youtube_video' !== $type ) {
         return $output;
     }
-    return 'video';
+    $output = "<iframe width=\"560\" height=\"315\" src=\"//www.youtube.com/embed/{$item}?rel=0\" frameborder=\"0\" allowfullscreen></iframe>";
+    return $output;
 }
