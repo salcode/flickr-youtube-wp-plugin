@@ -374,7 +374,7 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
         } // rebuildPluginContent()
 
         private static function display_item_to_string( $item, $type ) {
-            return '<pre>' . print_r( $item, true ) . '</pre>';
+            return apply_filters( 'salogic_flickr_youtube_display', '<pre>' . print_r( $item, true ) . '</pre>', $item, $type );
         }
 
 
@@ -433,4 +433,18 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
 new SaLogicFlickrYouTube();
 
-?>
+add_filter( 'salogic_flickr_youtube_display', 'salogic_fyd_flickr', 10, 3 );
+add_filter( 'salogic_flickr_youtube_display', 'salogic_fyd_youtube', 10, 3 );
+
+function salogic_fyd_flickr( $output, $item, $type ) {
+    if ( 'flickr_photo' !== $type ) {
+        return $output;
+    }
+    return 'photo';
+}
+function salogic_fyd_youtube( $output, $item, $type ) {
+    if ( 'youtube_video' !== $type ) {
+        return $output;
+    }
+    return 'video';
+}
