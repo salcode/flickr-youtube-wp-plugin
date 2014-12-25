@@ -440,7 +440,8 @@ function salogic_fyd_flickr( $output, $item, $type ) {
     if ( 'flickr_photo' !== $type ) {
         return $output;
     }
-    return 'photo';
+    $output = "<img src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}.jpg\">";
+    return $output;
 }
 function salogic_fyd_youtube( $output, $item, $type ) {
     if ( 'youtube_video' !== $type ) {
