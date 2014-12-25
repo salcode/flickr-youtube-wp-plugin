@@ -437,7 +437,9 @@ function salogic_fyd_flickr( $output, $item, $type ) {
     if ( 'flickr_photo' !== $type ) {
         return $output;
     }
-    $output = "<img src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}.jpg\">";
+    // sizes at https://www.flickr.com/services/api/misc.urls.html
+    $size = 'b';
+    $output = "<img src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}_{$size}.jpg\">";
     return $output;
 }
 function salogic_fyd_youtube( $output, $item, $type ) {
