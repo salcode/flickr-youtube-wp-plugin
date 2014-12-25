@@ -1,5 +1,7 @@
 .salogicphotoset ul {
     list-style: none;
+    margin-left: 0;
+    margin-right: 0;
 }
 .salogicphotoset ul li {
     margin-bottom: 20px;
