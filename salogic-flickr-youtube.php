@@ -290,6 +290,8 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
 
         public function loadFrontEndAssets() {
             wp_enqueue_style('salogicFlickrYouTubeFrontEnd', plugin_dir_url( __FILE__ ).'css/salogic-flickr-youtube.css', false, '1.3');
+
+            wp_enqueue_script('lazysizes', plugin_dir_url( __FILE__ ).'js/lazysizes.min.js', false, '0.6.1');
         }
 
         public function loadCss($hook) {
