@@ -441,13 +441,13 @@ function salogic_fyd_flickr( $output, $item, $type ) {
     }
     // sizes at https://www.flickr.com/services/api/misc.urls.html
     $size = 'b';
-    $output = "<img src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}_{$size}.jpg\">";
+    $output = "<img class=\"lazyload\" data-src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}_{$size}.jpg\">";
     return $output;
 }
 function salogic_fyd_youtube( $output, $item, $type ) {
     if ( 'youtube_video' !== $type ) {
         return $output;
     }
-    $output = "<iframe width=\"560\" height=\"315\" src=\"//www.youtube.com/embed/{$item}?rel=0\" frameborder=\"0\" allowfullscreen></iframe>";
+    $output = "<iframe class=\"lazyload\" width=\"853\" height=\"480\" data-src=\"//www.youtube.com/embed/{$item}?rel=0\" frameborder=\"0\" allowfullscreen></iframe>";
     return $output;
 }
