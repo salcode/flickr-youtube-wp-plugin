@@ -441,7 +441,7 @@ function salogic_fyd_flickr( $output, $item, $type ) {
     }
     // sizes at https://www.flickr.com/services/api/misc.urls.html
     $size = 'b';
-    $output = "<img class=\"lazyload\" data-src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}_{$size}.jpg\">";
+    $output = "<img width=\"1024\" height=\"768\" class=\"lazyload\" data-src=\"http://farm{$item['farm']}.static.flickr.com/{$item['server']}/{$item['id']}_{$item['secret']}_{$size}.jpg\">";
     return $output;
 }
 function salogic_fyd_youtube( $output, $item, $type ) {
