@@ -188,19 +188,19 @@ if (!class_exists ("SaLogicFlickrYouTube")) {
                 return;
             }
 
+            if ( 'post' !== $post->post_type ) {
+                return;
+            }
+
             foreach ($checkbox_meta_keys as $key) {
                 $old[$key] = get_post_meta( $post_id, $key, true );
-                // only modify value stored
-                // if the data for this metabox appears in the $_POST array
-                if ( array_key_exists($key, $_POST) ) {
-                    $new[$key] = $_POST[$key];
-                    $new[$key] = ($new[$key] ? implode( ',', $new[$key] ) : '');
+                $new[$key] = array_key_exists( $key, $_POST ) ? $_POST[$key] : array();
+                $new[$key] = ($new[$key] ? implode( ',', $new[$key] ) : '');
 
-                    if ( $new[$key] && $new[$key] != $old[$key] ) {
-                        update_post_meta($post_id, $key, $new[$key]);
-                    } elseif ( '' == $new[$key] && $old[$key] ) {
-                        delete_post_meta($post_id, $key, $old[$key]);
-                    }
+                if ( $new[$key] && $new[$key] != $old[$key] ) {
+                    update_post_meta($post_id, $key, $new[$key]);
+                } elseif ( '' == $new[$key] && $old[$key] ) {
+                    delete_post_meta($post_id, $key, $old[$key]);
                 }
             } // foreach meta_key
         } // save()
