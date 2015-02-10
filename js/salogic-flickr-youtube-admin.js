@@ -58,7 +58,7 @@
 (function() {
     var youTubeIds
         , $videos
-        // youTubeApiIndex - starting index value (one-based index) 
+        // youTubeApiIndex - starting index value (one-based index)
         // https://developers.google.com/youtube/2.0/developers_guide_protocol_api_query_parameters#start-indexsp
         , youTubeApiIndex = 1
         , htmlRowsToAdd = '';
@@ -135,7 +135,7 @@
 
         // increment youTubeApiIndex, in preparation for the user
         // clicking to manually load more videos
-        youTubeApiIndex += args['start-index']+args['max-results']
+        youTubeApiIndex = args['start-index']+args['max-results']
 
     }; // ajaxVideoBatchLoad()
 
@@ -212,7 +212,6 @@
         $('#salogic-youtube-videos-load-more').on('click', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
-
             ajaxVideoBatchLoad({
                 'start-index': youTubeApiIndex
             });
